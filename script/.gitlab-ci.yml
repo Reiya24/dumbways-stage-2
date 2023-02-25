@@ -1,0 +1,28 @@
+stages:
+  - build
+  - test
+
+docker:image:
+  stage: build
+  image: docker:1.11
+  services:
+    - docker:dind
+  script:
+    - export DOCKER_HOST=tcp://docker:2375/
+    - docker version
+    - docker login -u $USERNAME -p $PASSWORD_DOCKER
+    - docker build -t $USERNAME/$IMAGE_NAME .
+    - docker push $USERNAME/$IMAGE_NAME
+
+docker:deploy:
+  stage: test
+  before_script:
+    - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+    - eval $(ssh-agent -s)
+    - echo "$PRIVATE_KEY" | tr -d '\r' | ssh-add -
+    - mkdir -p ~/.ssh
+    - chmod 700 ~/.ssh
+    - ssh-keyscan $VM_ADDRESS >> ~/.ssh/known_hosts
+    - chmod 644 ~/.ssh/known_hosts
+  script:
+    - ssh $USERNAME@$VM_ADDRESS "cd ~/$IMAGE_NAME && docker compose up -d"

@@ -1,0 +1,41 @@
+image: ubuntu
+
+before_script:
+  - 'which ssh-agent || ( apt-get update -y && apt-get install openssh-client git -y )'
+  - eval $(ssh-agent -s)
+  - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add -
+  - mkdir -p ~/.ssh
+  - chmod 700 ~/.ssh
+  - ssh-keyscan $VM_ADDRESS >> ~/.ssh/known_hosts
+  - chmod 644 ~/.ssh/known_hosts
+
+  ##
+  ## Alternatively, assuming you created the SSH_SERVER_HOSTKEYS variable
+  ## previously, uncomment the following two lines instead.
+  ##
+  #- echo "$SSH_SERVER_HOSTKEYS" > ~/.ssh/known_hosts
+  #- chmod 644 ~/.ssh/known_hosts
+
+  ##
+  ## You can optionally disable host key checking. Be aware that by adding that
+  ## you are suspectible to man-in-the-middle attacks.
+  ## WARNING: Use this only with the Docker executor, if you use it with shell
+  ## you will overwrite your user's SSH config.
+  ##
+  #- '[[ -f /.dockerenv ]] && echo -e "Host *\n\tStrictHostKeyChecking no\n\n" > ~/.ssh/config'
+
+  ##
+  ## Optionally, if you will be using any Git commands, set the user name and
+  ## email.
+  ##
+  - git config --global user.email "darth@empire.com"
+  - git config --global user.name "Darth Vader"
+
+
+Test SSH:
+  script:
+  # try to connect to GitLab.com
+  - ssh git@gitlab.com
+
+  # try to clone yourself. A *PUBLIC* key paired to the SSH_PRIVATE_KEY was added as deploy key to this repository
+  - git clone git@gitlab.com:gitlab-examples/ssh-private-key.git

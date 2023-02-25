@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  prometheus:
+    container_name: prometheus
+    image: bitnami/prometheus:latest
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - 9090:9090
+    volumes:
+      - /home/reiya24/konfigurasi_prometheus/prometheus.yml:/etc/prometheus/prometheus.yml
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    stdin_open: true
+    restart: unless-stopped
+    ports:
+      - 3123:3000
+    volumes:
+      - grafana-storage:/etc/grafana/provisioning
+      - grafana-storage:/var/lib/grafana
+      - grafana-storage:/etc/grafana/config.ini
+
+volumes:
+  grafana-storage:

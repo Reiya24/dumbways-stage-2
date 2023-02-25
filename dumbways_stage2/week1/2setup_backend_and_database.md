@@ -1,7 +1,7 @@
 # setup cloudflare untuk backend
 pergi ke situs cloudflare > pilih akun > website > klik
 domain yang tersedia
-![](.cloud_computing_images/36ecf02e.png)
+![](.1cloud_computing/36ecf02e.png)
 
 pilih dns > add record > masukan domain dan ip public dari gateway
 ![](.2setup_backend_and_database_images/f83c9546.png)
